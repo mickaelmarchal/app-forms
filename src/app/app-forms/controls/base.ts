@@ -5,15 +5,16 @@ import {BaseValidator} from '../validators/base';
  */
 
 export interface BaseControlOptions {
-  label ?: string;
-  value ?: any;
-  validators ?: BaseValidator[];
-  asyncValidators ?: AsyncValidatorFn|AsyncValidatorFn[];
-  validationMessages ?: {};
+  label?: string;
+  value?: any;
+  validators?: BaseValidator[];
+  asyncValidators?: AsyncValidatorFn|AsyncValidatorFn[];
+  disableDefaultValidators?: boolean;
 };
 
 export class BaseControl extends FormControl {
 
+  controlType: string;
   label: string | null;
   formValidators: BaseValidator[];
   formErrors: string;

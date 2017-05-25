@@ -37,8 +37,6 @@ export class AppComponent {
         })
       }),
 
-      // TODO integrate automatically validators in specialized fields. Eg, include an email validator in EmailControl
-      // it should still be possible to overwrite with custom validators
       email: new EmailControl({
         label: 'Email address',
         value: 'email@toto.com',
