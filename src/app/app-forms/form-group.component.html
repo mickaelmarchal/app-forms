@@ -1,0 +1,26 @@
+
+<div *ngFor="let key of formGroup.controls | keys" class="form-row" [formGroup]="formGroup">
+
+  <label [attr.for]="key">{{ formGroup.controls[key].label }}</label>
+
+    <div [ngSwitch]="formGroup.controls[key].controlType">
+
+      <input *ngSwitchCase="'text'" [formControlName]="key" [required]="formGroup.controls[key].isRequired()"
+             [id]="key" type="text">
+
+      <input *ngSwitchCase="'email'" [formControlName]="key" [required]="formGroup.controls[key].isRequired()"
+             [id]="key" type="email">
+
+      <select *ngSwitchCase="'dropdown'" [formControlName]="key" [id]="key" [required]="formGroup.controls[key].isRequired()">
+        <option *ngFor="let opt of formGroup.controls[key].options" [value]="opt.key">{{ opt.value }}</option>
+      </select>
+
+      <app-form-group *ngSwitchCase="'group'" [formGroup]="formGroup.controls[key]"></app-form-group>
+
+    </div>
+
+    <div *ngIf="formGroup.controls[key].formErrors" class="errorMessage">
+      {{ formGroup.controls[key].formErrors }}
+    </div>
+
+</div>

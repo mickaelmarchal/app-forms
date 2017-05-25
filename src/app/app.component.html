@@ -1,3 +1,11 @@
 <h1>
   {{title}}
 </h1>
+
+<div>
+  <h2>Job Application for Heroes</h2>
+
+  <button (click)="autofill()">Autofill</button>
+
+  <app-form [formGroup]="formGroup"></app-form>
+</div>
