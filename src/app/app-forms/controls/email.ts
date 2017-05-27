@@ -1,22 +1,21 @@
 import { EmailValidator } from '../validators/email';
 import { BaseControl, BaseControlOptions } from './base';
 
-
+/**
+ * Email form control
+ * Renders as <input type="email" />
+ */
 export class EmailControl extends BaseControl {
 
+  controlType = 'email';
+
   constructor(options: BaseControlOptions = {}) {
-
-    if (! options.disableDefaultValidators) {
-      if (!options.validators) {
-        options.validators = [new EmailValidator()];
-      } else {
-        options.validators.push(new EmailValidator());
-      }
-    }
-
     super(options);
 
-    this.controlType = 'email';
+    // add email validator unless explicitly disabled
+    if (! options['disableDefaultValidators']) {
+      this.addValidator(new EmailValidator());
+    }
   }
 
 }

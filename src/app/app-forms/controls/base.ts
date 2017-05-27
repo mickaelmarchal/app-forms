@@ -1,30 +1,33 @@
 import { AsyncValidatorFn, FormControl } from '@angular/forms';
 import {BaseValidator} from '../validators/base';
-/**
- * Base class for form controls
- */
 
+/**
+ * Base parameters for form controls
+ */
 export interface BaseControlOptions {
 
-  // label for the form element
+  /** label for the form control */
   label?: string;
 
-  // default value
+  /** default value */
   value?: any;
 
-  // array of vaidators
+  /** array of validators */
   validators?: BaseValidator[];
 
-  // array on async validators
+  /** array of async validators */
   asyncValidators?: AsyncValidatorFn|AsyncValidatorFn[];
 
-  // true to disable default validators that are set-up
+  /** true to disable default validators that are set-up */
   disableDefaultValidators?: boolean;
 
-  // what to do when value of element has changed
+  /** what to do when value of element has changed */
   onChange?: (value: any) => void;
 }
 
+/**
+ * Base class for form controls
+ */
 export class BaseControl extends FormControl {
 
   controlType: string;
@@ -37,7 +40,7 @@ export class BaseControl extends FormControl {
 
     super(
       options['value'] || null,
-      options['validators'] ? options['validators'].map((validator) => { return validator.validator; }) : [],
+      options['validators'] ? options['validators'].map((validator) => validator.validator) : [],
       options['asyncValidators'] || [],
     );
 
@@ -48,16 +51,21 @@ export class BaseControl extends FormControl {
       this.valueChanges.subscribe(options['onChange']);
     }
 
-    this.valueChanges.subscribe(data => this.onValueChanged(data));
-    this.onValueChanged(); // (re)set validation messages now
+    this.valueChanges.subscribe(data => this.updateValidationMessages(data));
+    this.updateValidationMessages(); // (re)set validation messages now
   }
 
-
-  private onValueChanged(data?: any) {
+  /**
+   * Update validation messages according to field state
+   * @param value field value
+   */
+  private updateValidationMessages(value?: any) {
 
     this.formErrors = '';
 
     if (!this.valid && (this.dirty || this.touched)) {
+
+      // iterate over all errors, fetch corresponding validator and use error message
       for (const key in this.errors) {
         if (this.errors.hasOwnProperty(key)) {
           for (const formValidator of this.formValidators) {
@@ -70,24 +78,49 @@ export class BaseControl extends FormControl {
     }
   }
 
-  public isRequired() {
-    // TODO could probably optimize this
-    return typeof this.formValidators.find((validator) => { return validator.name === 'required'; }) !== 'undefined';
+  /**
+   * Is the field required ?
+   * @returns {boolean}
+   */
+  public get isRequired() {
+    return this.containsValidator('required');
   }
 
-  /*  constructor(options: {
-      value?: T,
-      key?: string,
-      label?: string,
-      required?: boolean,
-      order?: number,
-      controlType?: string
-    } = {}) {
-      this.value = options.value;
-      this.key = options.key || '';
-      this.label = options.label || '';
-      this.required = !!options.required;
-      this.order = options.order === undefined ? 1 : options.order;
-      this.controlType = options.controlType || '';
-    }*/
+  /**
+   * Add validator to control
+   * @param validator
+   */
+  public addValidator(validator: BaseValidator) {
+
+    if (! this.containsValidator(validator)) {
+
+      this.formValidators.push(validator);
+      if (this.validator instanceof Array) {
+        this.validator.push(validator.validator);
+      } else {
+        this.setValidators(validator.validator);
+      }
+      return;
+    }
+  }
+
+  /**
+   * Does the field includes given validator?
+   * @param validator
+   * @returns {boolean}
+   */
+  public containsValidator(validator: BaseValidator|string) {
+    if (validator instanceof BaseValidator) {
+      validator = validator.name;
+    }
+
+    for (const val of this.formValidators) {
+      if (val.name === validator) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
 }

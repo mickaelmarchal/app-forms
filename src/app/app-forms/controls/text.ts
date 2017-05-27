@@ -4,19 +4,34 @@ import {MaxLengthValidator} from '../validators/maxlength';
 import {PatternValidator} from '../validators/pattern';
 
 export interface TextControlOptions extends BaseControlOptions {
+
+  /** Type of input (<input type="xxx">) */
   inputType?: string;
+
+  /** Minimum accepted text length */
   minLength?: number;
+
+  /** Maximum accepted text length */
   maxLength?: number;
-  pattern?: string;
+
+  /** Accepted pattern for text */
+  pattern?: string | RegExp;
 }
 
+/**
+ * Text form control
+ * Renders as <input type="text" />
+ * Minlength, maxlength and pattern constraints can be specified in options
+ * The control can be extended to create other text-based input controls
+ */
 export class TextControl extends BaseControl {
 
   controlType = 'text';
   inputType = 'text';
-  minLength = null;
-  maxLength = null;
-  pattern = null;
+
+  minLength: number | null;
+  maxLength: number | null;
+  pattern: string | RegExp | null;
 
   constructor(options: TextControlOptions = {}) {
     super(options);
@@ -26,31 +41,27 @@ export class TextControl extends BaseControl {
     this.pattern = options['pattern'] || null;
 
     if (this.minLength) {
-      if (!options.validators) {
-        options.validators = [new MinLengthValidator(this.minLength)];
-      } else {
-        options.validators.push(new MinLengthValidator(this.minLength));
-      }
+      this.addValidator(new MinLengthValidator(this.minLength));
     }
-
     if (this.maxLength) {
-      if (!options.validators) {
-        options.validators = [new MaxLengthValidator(this.maxLength)];
-      } else {
-        options.validators.push(new MaxLengthValidator(this.maxLength));
-      }
+      this.addValidator(new MaxLengthValidator(this.maxLength));
     }
-
     if (this.pattern) {
-      if (!options.validators) {
-        options.validators = [new PatternValidator(this.pattern)];
-      } else {
-        options.validators.push(new PatternValidator(this.pattern));
-      }
+      this.addValidator(new PatternValidator(this.pattern));
+    }
+  }
+
+  /**
+   * Get validation pattern as string (ready to use in HTML pattern attribute)
+   * @returns {string}
+   */
+  get patternToString()
+  {
+    if (this.pattern instanceof RegExp) {
+      return this.pattern.toString().replace(/^[\/]|[\/]$/g, '');
     }
 
-    super(options);
-
+    return this.pattern;
   }
 
 }

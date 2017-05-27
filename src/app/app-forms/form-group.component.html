@@ -12,26 +12,28 @@
 
     <!-- text -->
     <input *ngSwitchCase="'text'" [formControlName]="key" [id]="key"
-           [required]="formGroup.controls[key].isRequired()"
+           [type]="formGroup.controls[key].inputType"
+           [required]="formGroup.controls[key].isRequired"
            [minlength]="formGroup.controls[key].minLength"
            [maxlength]="formGroup.controls[key].maxLength"
-           [pattern]="formGroup.controls[key].pattern"
-           [type]="formGroup.controls[key].inputType">
+           [pattern]="formGroup.controls[key].patternToString">
 
     <!-- date -->
     <input *ngSwitchCase="'date'" [formControlName]="key" [id]="key"
            type="date"
-           pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
-           [required]="formGroup.controls[key].isRequired()"
+           [required]="formGroup.controls[key].isRequired"
            [min]="formGroup.controls[key].minToString"
-           [max]="formGroup.controls[key].maxToString">
+           [max]="formGroup.controls[key].maxToString"
+           [pattern]="formGroup.controls[key].patternToString">
 
     <!-- email -->
-    <input *ngSwitchCase="'email'" [formControlName]="key" [required]="formGroup.controls[key].isRequired()"
-           [id]="key" type="email">
+    <input *ngSwitchCase="'email'" [formControlName]="key" [id]="key"
+           type="email"
+           [required]="formGroup.controls[key].isRequired">
 
     <!-- dropdown -->
-    <select *ngSwitchCase="'dropdown'" [formControlName]="key" [id]="key" [required]="formGroup.controls[key].isRequired()">
+    <select *ngSwitchCase="'dropdown'" [formControlName]="key" [id]="key"
+            [required]="formGroup.controls[key].isRequired">
       <option *ngFor="let opt of formGroup.controls[key].options" [value]="opt.key">{{ opt.value }}</option>
     </select>
 

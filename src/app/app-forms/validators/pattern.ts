@@ -3,7 +3,7 @@ import { BaseValidator } from './base';
 
 export class PatternValidator extends BaseValidator {
 
-  constructor(pattern: string, message?: string) {
+  constructor(pattern: string | RegExp, message?: string) {
     super();
 
     this.name = 'pattern';

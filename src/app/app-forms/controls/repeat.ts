@@ -1,18 +1,31 @@
 import { AbstractControl, FormArray } from '@angular/forms';
 
+/**
+ * Options for Repeat form control
+ */
 export interface RepeatControlOptions {
+
+  /** Label for group */
   label?: string;
+
+  /** Number of items to show on form init */
   count?: number;
-  control: (count: number) => AbstractControl;
+
+  /** Callback that returns a new instance of the control to repeat */
+  controlCreateFn: (count: number) => AbstractControl;
 }
 
+/**
+ * Repeat form control
+ * Contains a single control that can be repeated N times
+ */
 export class RepeatControl extends FormArray {
 
   controlType = 'repeat';
 
   label: string | null;
   count: number;
-  control: (count: number) => AbstractControl;
+  controlCreateFn: (count: number) => AbstractControl;
 
   isGroup = true;
 
@@ -20,7 +33,7 @@ export class RepeatControl extends FormArray {
 
     super([]);
 
-    this.control = options.control;
+    this.controlCreateFn = options.controlCreateFn;
     this.label = options['label'] || null;
 
     if (options['count']) {
@@ -28,9 +41,12 @@ export class RepeatControl extends FormArray {
     } else {
       this.count = 0;
     }
-
   }
 
+  /**
+   * Set the number of controls to display
+   * @param count
+   */
   public setCount(count: number) {
     const diff = count - this.count;
 
@@ -41,13 +57,11 @@ export class RepeatControl extends FormArray {
     } else if (diff > 0) {
       // Adding elements
       for (let i = 0; i < diff ; i ++) {
-        this.push(this.control(this.count + i));
+        this.push(this.controlCreateFn(this.count + i));
       }
     }
 
     this.count = count;
-
-
   }
 
 }
