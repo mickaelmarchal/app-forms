@@ -1,10 +1,10 @@
-import { BaseControl, BaseControlOptions } from './base';
 import { EmailValidator } from '../validators/email';
+import { BaseControl, BaseControlOptions } from './base';
 
 
 export class EmailControl extends BaseControl {
 
-  constructor(options: BaseControlOptions) {
+  constructor(options: BaseControlOptions = {}) {
 
     if (! options.disableDefaultValidators) {
       if (!options.validators) {

@@ -1,26 +1,47 @@
 
 <div *ngFor="let key of formGroup.controls | keys" class="form-row" [formGroup]="formGroup">
 
-  <label [attr.for]="key">{{ formGroup.controls[key].label }}</label>
+  <label *ngIf="formGroup.controls[key].label" [attr.for]="key">{{ formGroup.controls[key].label }}</label>
 
-    <div [ngSwitch]="formGroup.controls[key].controlType">
+  <!-- group -->
+  <app-form-group *ngIf="formGroup.controls[key].isGroup"
+                  [formGroup]="formGroup.controls[key]"></app-form-group>
 
-      <input *ngSwitchCase="'text'" [formControlName]="key" [required]="formGroup.controls[key].isRequired()"
-             [id]="key" type="text">
 
-      <input *ngSwitchCase="'email'" [formControlName]="key" [required]="formGroup.controls[key].isRequired()"
-             [id]="key" type="email">
+  <div *ngIf="! formGroup.controls[key].isGroup" [ngSwitch]="formGroup.controls[key].controlType">
 
-      <select *ngSwitchCase="'dropdown'" [formControlName]="key" [id]="key" [required]="formGroup.controls[key].isRequired()">
-        <option *ngFor="let opt of formGroup.controls[key].options" [value]="opt.key">{{ opt.value }}</option>
-      </select>
+    <!-- text -->
+    <input *ngSwitchCase="'text'" [formControlName]="key" [id]="key"
+           [required]="formGroup.controls[key].isRequired()"
+           [minlength]="formGroup.controls[key].minLength"
+           [maxlength]="formGroup.controls[key].maxLength"
+           [pattern]="formGroup.controls[key].pattern"
+           [type]="formGroup.controls[key].inputType">
 
-      <app-form-group *ngSwitchCase="'group'" [formGroup]="formGroup.controls[key]"></app-form-group>
+    <!-- date -->
+    <input *ngSwitchCase="'date'" [formControlName]="key" [id]="key"
+           type="date"
+           pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+           [required]="formGroup.controls[key].isRequired()"
+           [min]="formGroup.controls[key].minToString"
+           [max]="formGroup.controls[key].maxToString">
 
-    </div>
+    <!-- email -->
+    <input *ngSwitchCase="'email'" [formControlName]="key" [required]="formGroup.controls[key].isRequired()"
+           [id]="key" type="email">
 
-    <div *ngIf="formGroup.controls[key].formErrors" class="errorMessage">
-      {{ formGroup.controls[key].formErrors }}
-    </div>
+    <!-- dropdown -->
+    <select *ngSwitchCase="'dropdown'" [formControlName]="key" [id]="key" [required]="formGroup.controls[key].isRequired()">
+      <option *ngFor="let opt of formGroup.controls[key].options" [value]="opt.key">{{ opt.value }}</option>
+    </select>
+
+    <!-- textlabel -->
+    <div *ngSwitchCase="'textLabel'">{{ formGroup.controls[key].caption }}</div>
+
+  </div>
+
+  <div *ngIf="formGroup.controls[key].formErrors" class="errorMessage">
+    {{ formGroup.controls[key].formErrors }}
+  </div>
 
 </div>

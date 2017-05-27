@@ -5,12 +5,25 @@ import {BaseValidator} from '../validators/base';
  */
 
 export interface BaseControlOptions {
+
+  // label for the form element
   label?: string;
+
+  // default value
   value?: any;
+
+  // array of vaidators
   validators?: BaseValidator[];
+
+  // array on async validators
   asyncValidators?: AsyncValidatorFn|AsyncValidatorFn[];
+
+  // true to disable default validators that are set-up
   disableDefaultValidators?: boolean;
-};
+
+  // what to do when value of element has changed
+  onChange?: (value: any) => void;
+}
 
 export class BaseControl extends FormControl {
 
@@ -18,9 +31,9 @@ export class BaseControl extends FormControl {
   label: string | null;
   formValidators: BaseValidator[];
   formErrors: string;
+  isGroup = false;
 
-
-  constructor(options: BaseControlOptions) {
+  constructor(options: BaseControlOptions = {}) {
 
     super(
       options['value'] || null,
@@ -30,6 +43,10 @@ export class BaseControl extends FormControl {
 
     this.label = options['label'] || null;
     this.formValidators = options['validators'] || [];
+
+    if (options['onChange']) {
+      this.valueChanges.subscribe(options['onChange']);
+    }
 
     this.valueChanges.subscribe(data => this.onValueChanged(data));
     this.onValueChanged(); // (re)set validation messages now
@@ -42,12 +59,13 @@ export class BaseControl extends FormControl {
 
     if (!this.valid && (this.dirty || this.touched)) {
       for (const key in this.errors) {
-        for (const formValidator of this.formValidators) {
-          if (formValidator.name === key) {
-            this.formErrors += formValidator.validationMessage + ' ';
+        if (this.errors.hasOwnProperty(key)) {
+          for (const formValidator of this.formValidators) {
+            if (formValidator.name === key) {
+              this.formErrors += formValidator.validationMessage + ' ';
+            }
           }
         }
-
       }
     }
   }

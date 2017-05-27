@@ -1,11 +1,12 @@
-<h1>
-  {{title}}
-</h1>
+<h1>Formular</h1>
+
+<h2>Sample form</h2>
 
 <div>
-  <h2>Job Application for Heroes</h2>
-
   <button (click)="autofill()">Autofill</button>
-
-  <app-form [formGroup]="formGroup"></app-form>
+  <button (click)="addField()">Add field</button>
 </div>
+
+<hr />
+
+<app-form [formGroup]="formGroup"></app-form>

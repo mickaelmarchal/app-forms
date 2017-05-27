@@ -2,10 +2,13 @@ import { Component } from '@angular/core';
 
 import { EmailControl } from './app-forms/controls/email';
 import { TextControl } from './app-forms/controls/text';
-import {DropdownControl} from './app-forms/controls/dropdown';
+import { DropdownControl } from './app-forms/controls/dropdown';
 import { GroupControl } from './app-forms/controls/group';
-import {RequiredValidator} from "./app-forms/validators/required";
-import {MinLengthValidator} from "./app-forms/validators/minlength";
+import { RequiredValidator } from './app-forms/validators/required';
+import { DateControl } from './app-forms/controls/date';
+import { DateRangeControl } from './app-forms/controls/daterange';
+import { TextLabelControl } from './app-forms/controls/text-label';
+import { RepeatControl } from './app-forms/controls/repeat';
 
 @Component({
   selector: 'app-root',
@@ -13,7 +16,6 @@ import {MinLengthValidator} from "./app-forms/validators/minlength";
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'app works!';
 
   formGroup: GroupControl;
 
@@ -23,7 +25,7 @@ export class AppComponent {
 
       name: new TextControl({
         label: 'Name',
-        validators: [ new RequiredValidator('Name is required.'), new MinLengthValidator(5)],
+        validators: [ new RequiredValidator('Name is required.')],
       }),
 
       address: new GroupControl({
@@ -33,7 +35,9 @@ export class AppComponent {
         }),
         postcode: new TextControl({
           label: 'Post code',
-          value: '8000'
+          value: '8000',
+          maxLength: 7,
+          pattern: '^[A-Z0-9 -.]*$'
         })
       }),
 
@@ -51,6 +55,42 @@ export class AppComponent {
           { key: 'good', value: 'Good'},
           { key: 'unproven', value: 'Unproven'}
         ]
+      }),
+
+      dateOfBirth: new DateControl({
+        label: 'Date of birth',
+        min: new Date('1980-01-01'),
+        max: new Date('1999-12-31')
+      }),
+
+      text: new TextLabelControl({
+        caption: 'Hello'
+      }),
+
+      dateRange: new DateRangeControl({
+        label: 'Date range'
+      }),
+
+      roomsNb: new DropdownControl({
+        label: 'Number of rooms',
+        options: [
+          { key: 1, value: '1'},
+          { key: 2, value: '2'},
+          { key: 3, value: '3'},
+          { key: 4, value: '4'}
+        ],
+        onChange: (data) => {
+          if (this.formGroup.contains('rooms')) {
+            const room = this.formGroup.get('rooms');
+            if (room instanceof RepeatControl) {
+              room.setCount(parseInt(data, 10));
+            }
+          }
+        }
+      }),
+
+      rooms: new RepeatControl({
+        control: (count) => new TextControl({ label: 'Room ' + (count + 1) })
       })
     });
   }
@@ -65,6 +105,14 @@ export class AppComponent {
       email: 'email@company.com'
     });
 
+  }
+
+  public addField() {
+
+    this.formGroup.addControl('test', new TextControl({
+      label: 'Test',
+      validators: [ new RequiredValidator() ]
+    }));
   }
 
 }
